@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-row class="flex-column">
-      <v-col md="12" class="mb-4">
+    <v-row class="flex-column" v-if="!ui.loading">
+      <v-col md="12" class="mb-4" >
         <v-row>
           <v-col md="3">
             <v-row class="flex-column" dense>
@@ -15,7 +15,7 @@
           <v-col md="7">
             <v-row class="flex-column mt-1 ml-2">
               <h2>{{ manga.title }}</h2>
-              <h3>Descripción</h3>
+              <h3>Description</h3>
               <span class="text-justify mb-2">{{ manga.description }}</span>
               <h3>Score</h3>
               <div class="d-flex">
@@ -33,7 +33,7 @@
               </div>
               <h3>Status</h3>
               <span class="text-justify mb-2">{{ manga.status }}</span>
-              <h3>Año de publicación</h3>
+              <h3>Published year</h3>
               <span class="text-justify mb-2 ">{{ manga.years }}</span>
             </v-row>
           </v-col>
@@ -42,7 +42,7 @@
       <v-divider></v-divider>
       <v-col md="3" class="mt-4">
         <v-text-field
-          label="Buscar capítulo"
+          label="Search chapter by name"
           outlined
           dense
           prepend-inner-icon="mdi-magnify"
@@ -54,18 +54,18 @@
           <h1 class="font-weight-regular grey--text lighten-2">Capítulos</h1>
           <v-spacer></v-spacer>
           <div class="mr-4">
-            <v-checkbox label="Modo edición"></v-checkbox>
+            <v-checkbox label="Edition mode"></v-checkbox>
           </div>
           <div class="mr-4">
-            <v-checkbox label="Ver no vistos"></v-checkbox>
+            <v-checkbox label="No watched"></v-checkbox>
           </div>
           <div class="mr-4">
-            <v-checkbox label="Ver favoritos"></v-checkbox>
+            <v-checkbox label="Favorites"></v-checkbox>
           </div>
           <v-divider vertical></v-divider>
           <div style="max-width: 160px" class="mx-4">
             <v-select
-              :items="['Capitulo', 'Fecha']"
+              :items="['Name', 'Date']"
               dense
               hide-details
               :prepend-icon="
@@ -138,6 +138,16 @@
         </div>
       </v-col>
     </v-row>
+    <v-row v-else class="loading-container" justify="center" align="center">
+      <v-col>
+        <v-progress-circular
+          :size="50"
+          :width="5"
+          color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -152,9 +162,16 @@ export default {
   data() {
     return {
       ui: {
+        loading: true,
         order: false,
-        orderBy: 'Capitulo',
+        orderBy: 'Name',
         viewMode: 'headline',
+        mangaData: {
+          class: 'mb-6',
+          boilerplate: false,
+          elevation: 2,
+          loading: true,
+        },
       },
       chapters: [],
       manga: {},
@@ -169,6 +186,8 @@ export default {
     },
     async onViewChapters() {
       try {
+        this.ui.loading = true;
+
         const { data } = await ChapterRepository.getAllMangaChapters(
           this.$route.params.idManga,
         );
@@ -179,14 +198,13 @@ export default {
         }));
 
         this.manga = data.manga;
-
-        console.log(data);
       } catch (err) {
         console.log(err);
+      } finally {
+        this.ui.loading = false;
       }
     },
     onViewChapter(link) {
-      // this.$router.push({ name: 'ChapterManga', params: { url: link } });
       ipcRenderer.send('show-chapter', link);
     },
   },
@@ -201,6 +219,10 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.loading-container {
+  height: 100vh;
 }
 
 .container-header {
