@@ -69,7 +69,7 @@ export default {
   },
   computed: {
     image() {
-      return randomanime.anime();
+      return this.image_url ? this.image_url : randomanime.anime();
     },
     formatDescription() {
       return this.description.replace(/\n+/g, '');
