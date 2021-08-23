@@ -7,4 +7,7 @@ export default {
   getMangasByList(idList) {
     return Repository.get(`${process.env.VUE_APP_BACKEND_URL}/list-manga/${idList}/mangas`);
   },
+  storeList(req) {
+    return Repository.post(`${process.env.VUE_APP_BACKEND_URL}/list-manga`, req);
+  },
 };
