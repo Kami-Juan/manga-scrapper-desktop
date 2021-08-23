@@ -17,6 +17,7 @@ export default {
     async onLogout() {
       try {
         await UserRepository.onLogout();
+        localStorage.clear();
         this.$router.push({ name: 'Login' });
       } catch (error) {
         console.log(error);

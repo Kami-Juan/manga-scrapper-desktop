@@ -50,6 +50,8 @@ export default {
         try {
           const values = jwtDecode(data.token);
 
+          localStorage.setItem('token', data.token);
+
           this.SET_USER_CREDENTIALS(values);
           this.$router.push({ name: 'Dashboard' });
         } catch (err) {

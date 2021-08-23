@@ -1,10 +1,9 @@
-import Cookie from 'js-cookie';
 import jwtDecode from 'jwt-decode';
 
 import store from '../store';
 
 const auth = () => {
-  const token = Cookie.get('token');
+  const token = localStorage.getItem('token');
 
   if (!token) {
     return false;
